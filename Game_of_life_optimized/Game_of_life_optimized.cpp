@@ -89,6 +89,24 @@ struct AppState {
         }
     }
 
+    void InitializeGridUniform_LeapFrog() {
+        unsigned long long seed =
+        std::chrono::high_resolution_clock::now().time_since_epoch().count();
+        std::mt19937_64 rng(seed);
+        std::uniform_int_distribution<int> coin(0, 1);
+
+        // Precompute all random numbers sequentially
+        std::vector<int> random_numbers(ROWS * COLS);
+        for (int i = 0; i < ROWS * COLS; ++i) {
+            random_numbers[i] = coin(rng);
+        }
+
+#pragma omp parallel for schedule(static)
+        for (int i = 0; i < ROWS * COLS; ++i) {
+            grid[i] = random_numbers[i];
+        }
+    }
+
     // inside AppState:
 
     /// Returns true if perlin noise at (x,y) > threshold.
@@ -230,7 +248,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     case WM_CREATE: {
         AppState* state = reinterpret_cast<AppState*>(((CREATESTRUCT*)lParam)->lpCreateParams);
         SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(state));
-        state->InitializeGridPerlin(0.1, 0.5);
+        //state->InitializeGridPerlin(0.1, 0.5);
+        state->InitializeGridUniform_LeapFrog();
         HDC hdc = GetDC(hwnd);
         state->memDC = CreateCompatibleDC(hdc);
         BITMAPINFO bmi = {};
