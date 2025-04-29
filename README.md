@@ -52,7 +52,7 @@ Still a better solution but it isn't present in the project.
 > **Note:** Here is not really an issue but in application like Monte Carlo simultation this could lead to oversampling in overlapping regiorns.
 
 ### Divided subdomains
-The solution proposed, InitializeGridUniform_LeapFrog(), updates the uniform distribution using a leapfrog access scheme.
+The solution proposed, `InitializeGridUniform_LeapFrog()`, updates the uniform distribution using a leapfrog access scheme.
 It generates the full random sequence before entering the parallel region, and then each thread reads successive values at regular intervals.
 Specifically, if there are N threads:
 
@@ -75,7 +75,7 @@ It appears in many areas of computer graphics where natural randomness is needed
 - Clouds
 - Mountain terrains
 
-This impression pushed me to add a Perlin noise-based generator for the grid initialization.
+This impression pushed me to add a Perlin noise-based generator for the grid initialization, `InitializeGridPerlin(double frequency, double threshold)`.
 While this implementation is still deterministic, Perlin noise creates patterns that feel random yet cohesive, making it perfect for generating natural-looking structures.
 Also, this could be expanded to pseudo-random simply by randomizing tha hash table.
 
